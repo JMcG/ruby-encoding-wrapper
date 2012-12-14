@@ -1,7 +1,21 @@
 GEM
+  remote: http://rubygems.org/
   specs:
+    git (1.2.5)
+    hoe (3.3.1)
+      rake (>= 0.8, < 11.0)
+    jeweler (1.6.4)
+      bundler (~> 1.0)
+      git (>= 1.2.5)
+      rake
+    nokogiri (1.2.3)
+      hoe (>= 1.9.0)
+    rake (10.0.3)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  bundler (~> 1.2.0)
+  jeweler (~> 1.6.3)
+  nokogiri (~> 1.2.0)
