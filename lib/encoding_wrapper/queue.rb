@@ -218,18 +218,16 @@ module EncodingWrapper
       response = Net::HTTP.new(url.host, url.port).start { |http|
         http.request(request)
       }
+      responseXml = Nokogiri::XML(response.body)
 
-      output = {:errors => [], :status => false, :xml => '', :message => ''}
-      output[:xml] = Nokogiri::XML(response.body)
+      output = {:errors => [], :status => false, :xml => responseXml, :message => ''}
+      
+      output[:message] = responseXml.xpath('//message').inner_text
 
-      if response.css('errors error').length != 0
-        response.css('errors error').each { |error| output[:errors] << error.text }
+      if responseXml.xpath('//error').count > 0
+        responseXml.xpath('//error').each{|e| output[:errors] << e.inner_text }
       else
         output[:status] = true
-      end
-
-      if output[:xml].css('response message').length == 1
-        output[:message] = output[:xml].css('response message').text
       end
 
       output
