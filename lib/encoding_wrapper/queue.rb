@@ -138,7 +138,11 @@ module EncodingWrapper
           q.userid  @user_id
           q.userkey @user_key
           q.action  EncodingWrapper::Actions::ADD_MEDIA
-          q.source  source
+          q.source  {|s|
+            s.sourcefile  source
+            s.cdn         'aws'
+            s.hd          'yes'
+          }
           q.notify  notify_url
           q.format  { |f| yield f }
         }
@@ -220,16 +224,13 @@ module EncodingWrapper
       }
       responseXml = Nokogiri::XML(response.body)
 
-      output = {:errors => [], :status => false, :xml => responseXml, :message => ''}
+      output = {:status => false, :xml => responseXml, :message => ''}
       
-      output[:message] = responseXml.xpath('//message').inner_text
+      output[:message] = responseXml.xpath('//Message').inner_text
 
-      if responseXml.xpath('//error').count > 0
-        responseXml.xpath('//error').each{|e| output[:errors] << e.inner_text }
-      else
-        output[:status] = true
-      end
-
+      output[:errors] = responseXml.xpath('//Errors').inner_text
+      output[:status] = true if output[:errors].blank?
+      
       output
     end
 
